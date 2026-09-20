@@ -1,0 +1,12 @@
+package-as: __ADDON_NAME__
+
+move-folders:
+  __ADDON_NAME__/__ADDON_NAME__: __ADDON_NAME__
+
+ignore:
+  - Makefile
+  - README.md
+  - .luacheckrc
+  - .github
+  - .wow_path
+  - .release

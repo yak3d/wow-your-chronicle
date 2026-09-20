@@ -1,0 +1,17 @@
+## Interface: __INTERFACE__
+## Title: __ADDON_TITLE__
+## Notes: __ADDON_NOTES__
+## Author: __AUTHOR__
+## Version: @project-version@
+## IconTexture: Interface\Icons\INV_Misc_QuestionMark
+## SavedVariables: __ADDON_NAME__DB
+# Uncomment and fill in once the addon has a CurseForge project (used by the packager):
+# ## X-Curse-Project-ID: 000000
+# ## Category: Interface Enhancements
+
+# Load order: files run top to bottom before any event fires. Locale first so
+# later files can capture ns.L at file scope; Core before Settings so ns.Print
+# and ns.defaults exist when Settings loads.
+Locale.lua
+Core.lua
+Settings.lua
