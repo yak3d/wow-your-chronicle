@@ -1,5 +1,5 @@
--- luacheck configuration for __ADDON_TITLE__ (World of Warcraft addon).
--- Run with `make lint` or `luacheck __ADDON_NAME__`.
+-- luacheck configuration for Your Chronicle (World of Warcraft addon).
+-- Run with `make lint` or `luacheck YourChronicle`.
 
 std = "lua51"
 max_line_length = 140
@@ -21,9 +21,9 @@ exclude_files = {
 -- Globals this addon creates or mutates.
 -- The SLASH_ names are SLASH_ + the upper-cased addon name + an index.
 globals = {
-    "__ADDON_NAME__DB",
-    "SLASH___ADDON_UPPER__1",
-    "SLASH___ADDON_UPPER__2",
+    "YourChronicleDB",
+    "SLASH_YOURCHRONICLE1",
+    "SLASH_YOURCHRONICLE2",
     "SlashCmdList",
 }
 

@@ -19,7 +19,7 @@ ns.defaults = DEFAULT_DB
 -- Helpers
 -- ---------------------------------------------------------------------------
 function ns.Print(msg)
-    print(ADDON_COLOR .. "__ADDON_TITLE__|r: " .. tostring(msg))
+    print(ADDON_COLOR .. "Your Chronicle|r: " .. tostring(msg))
 end
 
 -- Recursively fills in any keys missing from dst using the values in src,
@@ -54,18 +54,18 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
         end
 
         -- Initialize SavedVariables
-        if not __ADDON_NAME__DB then
-            __ADDON_NAME__DB = {}
+        if not YourChronicleDB then
+            YourChronicleDB = {}
         end
-        DeepCopyDefaults(DEFAULT_DB, __ADDON_NAME__DB)
+        DeepCopyDefaults(DEFAULT_DB, YourChronicleDB)
 
         -- DB migration
-        if (__ADDON_NAME__DB.version or 0) < DB_VERSION then
+        if (YourChronicleDB.version or 0) < DB_VERSION then
             -- Add per-version migration steps here as DB_VERSION grows.
-            __ADDON_NAME__DB.version = DB_VERSION
+            YourChronicleDB.version = DB_VERSION
         end
 
-        ns.db = __ADDON_NAME__DB
+        ns.db = YourChronicleDB
 
         -- Register the Settings -> AddOns category now that ns.db exists.
         ns.Settings.Init()
@@ -83,10 +83,10 @@ end)
 -- Slash commands
 -- ---------------------------------------------------------------------------
 -- These global names are SLASH_ + the addon name in upper case + an index.
-SLASH___ADDON_UPPER__1 = "/__ADDON_SLASH__"
-SLASH___ADDON_UPPER__2 = "/__ADDON_LOWER__"
+SLASH_YOURCHRONICLE1 = "/yc"
+SLASH_YOURCHRONICLE2 = "/yourchronicle"
 
-SlashCmdList["__ADDON_UPPER__"] = function(input)
+SlashCmdList["YOURCHRONICLE"] = function(input)
     local L = ns.L
     -- rest holds everything after the subcommand, for commands that take arguments.
     local cmd, rest = input:match("^(%S+)%s*(.*)") -- luacheck: ignore rest

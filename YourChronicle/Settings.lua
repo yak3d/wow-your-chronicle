@@ -63,7 +63,7 @@ function ns.Settings.Init()
 end
 
 -- ---------------------------------------------------------------------------
--- Open the panel (used by /__ADDON_SLASH__ config)
+-- Open the panel (used by /yc config)
 -- ---------------------------------------------------------------------------
 function ns.Settings.Open()
     if not category then

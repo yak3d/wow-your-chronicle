@@ -1,10 +1,10 @@
-## Interface: __INTERFACE__
-## Title: __ADDON_TITLE__
-## Notes: __ADDON_NOTES__
-## Author: __AUTHOR__
+## Interface: 16001
+## Title: Your Chronicle
+## Notes: A journal you can use to chronicle your adventures in Azeroth.
+## Author: Yak
 ## Version: @project-version@
 ## IconTexture: Interface\Icons\INV_Misc_QuestionMark
-## SavedVariables: __ADDON_NAME__DB
+## SavedVariables: YourChronicleDB
 # Uncomment and fill in once the addon has a CurseForge project (used by the packager):
 # ## X-Curse-Project-ID: 000000
 # ## Category: Interface Enhancements

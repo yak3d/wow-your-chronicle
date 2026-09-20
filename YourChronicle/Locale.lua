@@ -11,19 +11,19 @@ ns.L = L
 -- ---------------------------------------------------------------------------
 -- enUS (default)
 -- ---------------------------------------------------------------------------
-L["TITLE"] = "__ADDON_TITLE__"
-L["LOADED"] = "Loaded. Type /__ADDON_SLASH__ for commands."
+L["TITLE"] = "Your Chronicle"
+L["LOADED"] = "Loaded. Type /yc for commands."
 L["ENABLED"] = "Enabled."
 L["DISABLED"] = "Disabled."
 L["UNKNOWN_COMMAND"] = "Unknown command: %s"
 
 -- Slash command help
 L["HELP_HEADER"] = "Commands:"
-L["HELP_CONFIG"] = "  /__ADDON_SLASH__ config - Open the settings panel"
-L["HELP_TOGGLE"] = "  /__ADDON_SLASH__ toggle - Enable or disable the addon"
+L["HELP_CONFIG"] = "  /yc config - Open the settings panel"
+L["HELP_TOGGLE"] = "  /yc toggle - Enable or disable the addon"
 
 -- Settings panel
-L["SETTING_ENABLED"] = "Enable __ADDON_TITLE__"
+L["SETTING_ENABLED"] = "Enable Your Chronicle"
 L["SETTING_ENABLED_TT"] = "Turn the addon on or off without disabling it in the AddOns list."
 L["SETTING_EXAMPLE_VALUE"] = "Example Value"
 L["SETTING_EXAMPLE_VALUE_TT"] = "An example numeric setting. Replace or remove it."

@@ -1,45 +1,7 @@
-<!-- template:begin -->
-
-# wow-addon-template
-
-Starter template for a World of Warcraft addon targeting **Retail** or
-**WoW Forever** (`_classic_beta_`). Ships a Makefile that symlinks the addon
-into your game install, a luacheck config, a BigWigs packager release
-workflow, and a minimal addon (chat print helper, SavedVariables with
-defaults and migration hook, Settings panel, slash command, locale table).
-
-## Usage
-
-1. Create a repo from this template (or clone it) and `cd` into it.
-2. Run init once:
-
-   ```shell
-   make init NAME=MyAddon FLAVOR=retail          # or FLAVOR=forever
-   ```
-
-   Optional variables: `TITLE="My Addon"`, `AUTHOR=Yak`, `SLASH=ma`,
-   `NOTES="What it does"`, `REPO=my-addon`, `GITHUB_USER=yak3d`.
-
-3. Commit the result. This block and the `init` target are removed by init.
-
-| Variable            | Token                                                                              | Default                                           |
-| ------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `NAME` (required)   | `__ADDON_NAME__` folder, TOC, `SavedVariables`                                     | -                                                 |
-| `FLAVOR` (required) | `__INTERFACE__` (`120100` / `16001`), `__FLAVOR__` (`_retail_` / `_classic_beta_`) | -                                                 |
-| `TITLE`             | `__ADDON_TITLE__`                                                                  | `NAME`                                            |
-| `SLASH`             | `__ADDON_SLASH__`                                                                  | lower-cased `NAME`                                |
-| `NOTES`             | `__ADDON_NOTES__`                                                                  | `<TITLE> for World of Warcraft.`                  |
-| `AUTHOR`            | `__AUTHOR__`                                                                       | `git config user.name`, then `$USER`              |
-| `REPO`              | `__REPO_NAME__`                                                                    | from the `origin` remote, else the directory name |
-| `GITHUB_USER`       | `__GITHUB_USER__`                                                                  | from the `origin` remote, else `yak3d`            |
-
-`__ADDON_UPPER__` and `__ADDON_LOWER__` are derived from `NAME`.
-
-<!-- template:end -->
 
 # **ADDON_TITLE**
 
-![GitHub License](https://img.shields.io/github/license/__GITHUB_USER__/__REPO_NAME__?style=for-the-badge)
+![GitHub License](https://img.shields.io/github/license/yak3d/wow-your-chronicle?style=for-the-badge)
 
 <!-- Uncomment once the addon has a CurseForge project ID:
 ![CurseForge Game Versions](https://img.shields.io/curseforge/game-versions/PROJECT_ID?style=for-the-badge)
@@ -51,9 +13,9 @@ defaults and migration hook, Settings panel, slash command, locale table).
 
 | Command                   | Description                 |
 | ------------------------- | --------------------------- |
-| `/__ADDON_SLASH__`        | Show available commands     |
-| `/__ADDON_SLASH__ config` | Open the settings panel     |
-| `/__ADDON_SLASH__ toggle` | Enable or disable the addon |
+| `/yc`        | Show available commands     |
+| `/yc config` | Open the settings panel     |
+| `/yc toggle` | Enable or disable the addon |
 
 ## Settings
 
@@ -83,7 +45,7 @@ It is cached in `.wow_path` so you only need to pass it once:
 make install WOW_DIR="/path/to/World of Warcraft"
 ```
 
-To target a different game flavor, override `FLAVOR` (default: `__FLAVOR__`):
+To target a different game flavor, override `FLAVOR` (default: `_classic_beta_`):
 
 ```shell
 make install FLAVOR=_classic_beta_
