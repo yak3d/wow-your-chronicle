@@ -42,5 +42,6 @@ read_globals = {
     "GetLocale", "GetTime", "GetBuildInfo", "GetRealmName", "InCombatLockdown", "IsInInstance",
     "UnitName", "UnitClass", "UnitGUID", "PlaySound", "PlaySoundFile", "GetCVar", "SetCVar",
     "C_AddOns", "C_ChatInfo", "C_CVar", "C_Item", "C_Map", "C_Spell", "C_Timer", "C_UnitAuras",
-    "WOW_PROJECT_ID", "WOW_PROJECT_MAINLINE", "WOW_PROJECT_CLASSIC",
+    "WOW_PROJECT_ID", "WOW_PROJECT_MAINLINE", "WOW_PROJECT_CLASSIC", "C_QuestLog", "GetZoneText",
+    "RequestTimePlayed", "IsInGroup", "GetNumGroupMembers", "C_Reputation", "C_Spell",
 }

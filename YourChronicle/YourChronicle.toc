@@ -9,9 +9,9 @@
 # ## X-Curse-Project-ID: 000000
 # ## Category: Interface Enhancements
 
-# Load order: files run top to bottom before any event fires. Locale first so
-# later files can capture ns.L at file scope; Core before Settings so ns.Print
-# and ns.defaults exist when Settings loads.
 Locale.lua
+DB.lua
+Dev.lua
 Core.lua
+Tracker.lua
 Settings.lua
