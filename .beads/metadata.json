@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "wow_your_chronicle",
+  "project_id": "da24df65-8c0f-4543-bdd5-e2afc8c5725f"
+}
