@@ -6,7 +6,7 @@
     hidden="true"
     enableMouse="true"
     clampedToScreen="true"
-    mixin="BackdropTemplateMixin">
+    inherits="PortraitFrameTemplate">
   <Size x="760" y="500" />
 
   <Anchors>

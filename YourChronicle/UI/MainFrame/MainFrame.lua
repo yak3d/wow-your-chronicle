@@ -6,27 +6,11 @@ local L = ns.L
 
 local frame = YourChronicleFrame
 
-frame:SetBackdrop({
-  bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-  edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-  tile = true,
-  tileSize = 32,
-  edgeSize = 32,
-  insets = { left = 11, right = 12, top = 12, bottom = 11 },
-})
-frame:SetBackdropBorderColor(1, 0.82, 0, 1)
-
 tinsert(UISpecialFrames, "YourChronicleFrame")
 
-local titleBg = frame:CreateTexture(nil, "OVERLAY")
-titleBg:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Header")
-titleBg:SetSize(320, 64)
-titleBg:SetPoint("TOP", 0, 12)
-
-local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-title:SetPoint("TOP", 0, 0)
-title:SetText(L["TITLE"])
-title:SetFont("fonts/morpheus.ttf", 18, "")
+-- PortraitFrameTemplate supplies the border, title bar, portrait ring and close button
+frame:SetTitle(L["TITLE"])
+frame:SetPortraitToAsset("Interface\\Icons\\INV_Misc_Book_09")
 
 local function SaveGeometry()
   local db = ns.db.frame
@@ -84,13 +68,13 @@ end)
 -- Header
 -- ----------------------------------
 local headerName = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-headerName:SetPoint("TOPLEFT", frame, "TOPLEFT", 22, -42)
+headerName:SetPoint("TOPLEFT", frame, "TOPLEFT", 62, -34)
 
 local headerZone = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-headerZone:SetPoint("TOP", frame, "TOP", 0, -42)
+headerZone:SetPoint("TOP", frame, "TOP", 0, -34)
 
 local headerScope = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-headerScope:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -22, -42)
+headerScope:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -22, -34)
 
 local function UpdateHeader()
   local name = UnitName("player") or "?"
