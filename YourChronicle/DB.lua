@@ -27,6 +27,10 @@ local DEFAULT_DB = {
   -- 5 = Legendary (orange)
   rarityFloor = 2,
 
+  frame = { width = 760, height = 500 },
+
+  ui = { tab = "journal" },
+
   -- account wide chronicle volume
   global = { entries = {} },
 

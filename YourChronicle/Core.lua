@@ -63,12 +63,16 @@ SlashCmdList["YOURCHRONICLE"] = function(input)
   elseif cmd == "test" then
     ns.Dev.Handle(rest or "")
 
+  elseif cmd == "help" then
+    ns.Print(L["HELP_HEADER"])
+    ns.Print(L["HELP_WINDOW"])
+    ns.Print(L["HELP_CONFIG"])
+    ns.Print(L["HELP_TOGGLE"])
+
   elseif cmd ~= "" then
     ns.Print(L["UNKNOWN_COMMAND"]:format(cmd))
 
   else
-    ns.Print(L["HELP_HEADER"])
-    ns.Print(L["HELP_CONFIG"])
-    ns.Print(L["HELP_TOGGLE"])
+    ns.Frame.Toggle()
   end
 end

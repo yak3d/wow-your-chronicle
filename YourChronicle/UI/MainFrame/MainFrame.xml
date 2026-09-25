@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+  <Frame
+    name="YourChronicleFrame"
+    parent="UIParent"
+    toplevel="true" 
+    hidden="true"
+    enableMouse="true"
+    clampedToScreen="true"
+    mixin="BackdropTemplateMixin">
+  <Size x="760" y="500" />
+
+  <Anchors>
+    <Anchor point="CENTER" />
+  </Anchors>
+</Frame>
+
+<Script file="MainFrame.lua" />
+</Ui>

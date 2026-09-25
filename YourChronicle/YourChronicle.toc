@@ -14,4 +14,7 @@ DB.lua
 Dev.lua
 Core.lua
 Tracker.lua
+UI/MainFrame/MainFrame.xml
+UI/Journal/Volumes.lua
+UI/Journal/Page.lua
 Settings.lua

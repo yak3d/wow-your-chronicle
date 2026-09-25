@@ -25,6 +25,8 @@ globals = {
     "SLASH_YOURCHRONICLE1",
     "SLASH_YOURCHRONICLE2",
     "SlashCmdList",
+    "YourChronicleFrame",
+    "UISpecialFrames",
 }
 
 -- WoW API surface this addon reads. Extend as the addon grows.
@@ -43,5 +45,6 @@ read_globals = {
     "UnitName", "UnitClass", "UnitGUID", "PlaySound", "PlaySoundFile", "GetCVar", "SetCVar",
     "C_AddOns", "C_ChatInfo", "C_CVar", "C_Item", "C_Map", "C_Spell", "C_Timer", "C_UnitAuras",
     "WOW_PROJECT_ID", "WOW_PROJECT_MAINLINE", "WOW_PROJECT_CLASSIC", "C_QuestLog", "GetZoneText",
-    "RequestTimePlayed", "IsInGroup", "GetNumGroupMembers", "C_Reputation", "C_Spell",
+    "RequestTimePlayed", "IsInGroup", "GetNumGroupMembers", "C_Reputation", "C_Spell", "GetScreenWidth",
+    "GetScreenHeight",
 }
