@@ -13,7 +13,7 @@ local titleBox
 local body
 local bodyScroll
 local sizeLabel
-local fontButtons = {}
+local fontDropdown
 local footerText
 
 local FONTS = {
@@ -128,18 +128,8 @@ local function ApplyFont()
     titleBox:SetFont(file, titleSize, "")
   end
 
-  for _, h in ipairs(FONTS) do
-    local button = fontButtons[h.key]
-
-    if button then
-      if h.key == font then
-        button:GetFontString():SetTextColor(1, 0.82, 0)
-        button.underline:Show()
-      else
-        button:GetFontString():SetTextColor(1, 1, 1)
-        button.underline:Hide()
-      end
-    end
+  if fontDropdown then
+    fontDropdown:GenerateMenu()
   end
 
   if sizeLabel then
@@ -168,35 +158,22 @@ local function Build(parent)
   toolbar:SetPoint("TOPLEFT")
   toolbar:SetPoint("TOPRIGHT")
 
-  local previous
-  for _, h in ipairs(FONTS) do
-    local button = CreateFrame("Button", nil, toolbar)
-    button:SetSize(80, 24)
+  fontDropdown = CreateFrame("DropdownButton", nil, toolbar, "WowStyle1DropdownTemplate")
+  fontDropdown:SetWidth(140)
+  fontDropdown:SetPoint("LEFT", 4, 0)
+  fontDropdown:SetupMenu(function(_, rootDescription)
+    for _, h in ipairs(FONTS) do
+      local radio = rootDescription:CreateRadio(h.label, function()
+        return h.key == font
+      end, function()
+        SetFont(h.key)
+      end)
 
-    if previous then
-      button:SetPoint("LEFT", previous, "RIGHT", 6, 0)
-    else
-      button:SetPoint("LEFT", 4, 0)
+      radio:AddInitializer(function(button)
+        button.fontString:SetFont(h.file, 13, "")
+      end)
     end
-
-    button:SetNormalFontObject("GameFontHighlightSmall")
-    button:SetText(h.label)
-    button:GetFontString():SetFont(h.file, 13, "")
-
-    local underline = button:CreateTexture(nil, "OVERLAY")
-    underline:SetSize(68, 3)
-    underline:SetPoint("BOTTOM", 0, 0)
-    underline:SetColorTexture(1, 0.82, 0, 1)
-    underline:Hide()
-    button.underline = underline
-
-    button:SetScript("OnClick", function()
-      SetFont(h.key)
-    end)
-
-    fontButtons[h.key] = button
-    previous = button
-  end
+  end)
 
   local plus = CreateFrame("Button", nil, toolbar)
   plus:SetSize(22, 22)
