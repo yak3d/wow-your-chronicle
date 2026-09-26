@@ -54,6 +54,7 @@ local function SaveDraft()
   local text = body and body:GetText() or ""
 
   if title == "" and text == "" then
+    ns.db.draft = nil
     return
   end
 
@@ -245,8 +246,10 @@ local function Build(parent)
   titleBox:SetScript("OnEscapePressed", function()
     titleBox:ClearFocus()
   end)
-  titleBox:SetScript("OnTextChanged", function()
-    SaveDraft()
+  titleBox:SetScript("OnTextChanged", function(_, userInput)
+    if userInput then
+      SaveDraft()
+    end
   end)
 
   local dateline = parchment:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -260,22 +263,25 @@ local function Build(parent)
   zone:SetTextColor(0.45, 0.35, 0.2)
 
   bodyScroll = CreateFrame("ScrollFrame", nil, parchment, "UIPanelScrollFrameTemplate")
+  bodyScroll.scrollBarHideable = true
+  bodyScroll.ScrollBar:Hide()
   bodyScroll:SetPoint("TOPLEFT", 16, -80)
-  bodyScroll:SetPoint("BOTTOMRIGHT", -16, 12)
+  bodyScroll:SetPoint("BOTTOMRIGHT", -34, 12)
 
   body = CreateFrame("EditBox", nil, bodyScroll)
   body:SetMultiLine(true)
   body:SetAutoFocus(false)
   body:SetTextColor(0.13, 0.09, 0.05)
-  body:SetWidth(parchment:GetWidth() - 60)
   bodyScroll:SetScrollChild(body)
 
   body:SetScript("OnEscapePressed", function()
     body:ClearFocus()
   end)
 
-  body:SetScript("OnTextChanged", function()
-    SaveDraft()
+  body:SetScript("OnTextChanged", function(_, userInput)
+    if userInput then
+      SaveDraft()
+    end
     UpdateFooter()
   end)
 
@@ -291,6 +297,12 @@ local function Build(parent)
 
     offset = math.floor(math.min(math.max(offset, 0), math.max(bodyScroll:GetVerticalScrollRange(), 0)))
     bodyScroll:SetVerticalScroll(offset)
+  end)
+
+  bodyScroll:EnableMouse(true)
+
+  bodyScroll:SetScript("OnMouseDown", function()
+    body:SetFocus()
   end)
 
   local footer = CreateFrame("Frame", nil, pageFrame)
@@ -322,10 +334,8 @@ local function Build(parent)
 
   UpdateFooter()
 
-  pageFrame:SetScript("OnSizeChanged", function()
-    if body then
-      body:SetWidth(parchment:GetWidth() - 60)
-    end
+  bodyScroll:SetScript("OnSizeChanged", function(_, width)
+    body:SetWidth(width)
   end)
 
   ApplyFont()

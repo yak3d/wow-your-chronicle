@@ -31,6 +31,9 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
     -- Register the Settings -> AddOns category now that ns.db exists.
     ns.Settings.Init()
 
+    -- Build the main window now that ns.db exists.
+    ns.Frame.Init()
+
     self:UnregisterEvent("ADDON_LOADED")
 
   elseif event == "PLAYER_LOGIN" then

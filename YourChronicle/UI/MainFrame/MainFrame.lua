@@ -1,4 +1,4 @@
-local addonName, ns = ...
+local _, ns = ...
 
 ns.Frame = {}
 
@@ -28,8 +28,8 @@ local function RestoreGeometry()
     -- clamp: keep the window fully on screen even if the screen shrank
     local sw, sh = GetScreenWidth(), GetScreenHeight()
     local x = math.min(math.max(db.x, 0), math.max(sw - db.width, 0))
-    local y = math.min(math.max(db.y, 0), math.max(sh - db.height, 0))
-    frame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", x, y)
+    local y = math.min(math.max(db.y, db.height), sh)
+    frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, y)
   else
     -- never moved yet: stay centred, the default from MainFrame.xml
     frame:SetPoint("CENTER")
@@ -251,19 +251,12 @@ ns.Frame.RegisterTab(
   BuildPlaceholder
 )
 
-local boot = CreateFrame("Frame")
-boot:RegisterEvent("ADDON_LOADED")
-boot:SetScript("OnEvent", function(self, _, addon)
-  if addon ~= addonName then
-    return
-  end
+function ns.Frame.Init()
   RestoreGeometry()
   UpdateHeader()
   BuildTabButtons()
   SelectTab(ns.db.ui.tab)
-  self:UnregisterEvent("ADDON_LOADED")
-end)
-
+end
 
 function ns.Frame.Toggle()
   if frame:IsShown() then

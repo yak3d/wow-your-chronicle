@@ -102,7 +102,7 @@ function ns.Volumes.Refresh()
       headerCount = headerCount + 1
 
       local header = headers[headerCount] or CreateHeader(listChild)
-      header[headerCount] = header
+      headers[headerCount] = header
       header:ClearAllPoints()
       header:SetPoint("TOPLEFT", 0, -y)
       header:SetPoint("RIGHT")
@@ -160,11 +160,13 @@ local function Build(parent)
   divider:SetColorTexture(1, 0.82, 0, 0.4)
 
   scroll = CreateFrame("ScrollFrame", nil, page, "UIPanelScrollFrameTemplate")
+  scroll.scrollBarHideable = true
+  scroll.ScrollBar:Hide()
   scroll:SetPoint("TOPLEFT", 6, -6)
-  scroll:SetPoint("BOTTOMRIGHT", page, "BOTTOMLEFT", SIDEBAR_WIDTH - 6, 6)
+  scroll:SetPoint("BOTTOMRIGHT", page, "BOTTOMLEFT", SIDEBAR_WIDTH - 28, 6)
 
   listChild = CreateFrame("Frame", nil, scroll)
-  listChild:SetWidth(SIDEBAR_WIDTH - 30)
+  listChild:SetWidth(SIDEBAR_WIDTH - 34)
   scroll:SetScrollChild(listChild)
 
   -- shown when there's no entries
