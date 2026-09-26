@@ -27,6 +27,7 @@ globals = {
     "SlashCmdList",
     "YourChronicleFrame",
     "UISpecialFrames",
+    "StaticPopupDialogs",
 }
 
 -- WoW API surface this addon reads. Extend as the addon grows.
@@ -37,7 +38,7 @@ read_globals = {
 
     -- Frames and UI
     "CreateFrame", "UIParent", "GameTooltip", "DEFAULT_CHAT_FRAME",
-    "StaticPopup_Show", "StaticPopupDialogs", "Mixin", "CreateFromMixins",
+    "StaticPopup_Show", "MenuUtil", "YES", "NO", "Mixin", "CreateFromMixins",
     "Settings", "MinimalSliderWithSteppersMixin", "Enum", "SOUNDKIT",
 
     -- API functions and namespaces

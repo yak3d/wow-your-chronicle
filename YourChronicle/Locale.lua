@@ -47,6 +47,11 @@ L["PAGE_UNTITLED"] = "(untitled)"
 L["PAGE_NOTHING_TO_SEAL"] = "Nothing to save, write about your adventures first!"
 L["PAGE_WORDS"] = "%d words"
 
+-- Entries
+L["ENTRY_DELETE"] = "Delete Entry"
+L["ENTRY_DELETE_CONFIRM"] = "Delete \"%s\"?\nThis cannot be undone."
+L["ENTRY_DELETED"] = "Deleted entry: %s"
+
 -- ---------------------------------------------------------------------------
 -- Other locales
 -- ---------------------------------------------------------------------------

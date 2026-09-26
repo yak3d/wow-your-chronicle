@@ -18,6 +18,7 @@ local selected
 local SIDEBAR_WIDTH = 230
 local ROW_HEIGHT = 26
 local HEADER_HEIGHT = 24
+local DELETE_POPUP = "YOURCHRONICLE_DELETE_ENTRY"
 
 local function GroupKey(entry)
   return date("%Y-%m", entry.timestamp or time())
@@ -25,6 +26,68 @@ end
 
 local function GroupTitle(entry)
   return date("%B %Y", entry.timestamp or time())
+end
+
+local function DeleteEntry(entry)
+  local volume = ns.GetVolume()
+  if not volume then
+    return
+  end
+
+  local index
+  for i, e in ipairs(volume) do
+    if e == entry then
+      index = i
+      break
+    end
+  end
+
+  if not index then
+    return
+  end
+
+  table.remove(volume, index)
+
+  if selected == index then
+    selected = nil
+  elseif selected and selected > index then
+    selected = selected - 1
+  end
+
+  local title = (entry.title and entry.title ~= "") and entry.title or L["PAGE_UNTITLED"]
+  ns.Print(L["ENTRY_DELETED"]:format(title))
+
+  ns.Volumes.Refresh()
+end
+
+StaticPopupDialogs[DELETE_POPUP] = {
+  text = L["ENTRY_DELETE_CONFIRM"],
+  button1 = YES,
+  button2 = NO,
+  OnAccept = function(_, entry)
+    DeleteEntry(entry)
+  end,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  preferredIndex = 3,
+}
+
+local function ShowEntryMenu(row)
+  local volume = ns.GetVolume()
+  local entry = volume and volume[row.entryIndex]
+  if not entry then
+    return
+  end
+
+  local title = (entry.title and entry.title ~= "") and entry.title or L["PAGE_UNTITLED"]
+
+  MenuUtil.CreateContextMenu(row, function(_, rootDescription)
+    rootDescription:CreateTitle(title)
+    rootDescription:CreateButton(L["ENTRY_DELETE"], function()
+      StaticPopup_Show(DELETE_POPUP, title, nil, entry)
+  end)
+  end)
 end
 
 local function CreateRow(parent)
@@ -51,8 +114,14 @@ local function CreateRow(parent)
   hover:SetAllPoints()
   hover:SetColorTexture(1, 0.82, 0, 0.15)
   row:SetHighlightTexture(hover)
+  row:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
-  row:SetScript("OnClick", function()
+  row:SetScript("OnClick", function(_, button)
+    if button == "RightButton" then
+      ShowEntryMenu(row)
+      return
+    end
+
     selected = row.entryIndex
     ns.Volumes.Refresh()
   end)
