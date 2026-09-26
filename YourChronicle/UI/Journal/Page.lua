@@ -22,6 +22,13 @@ local FONTS = {
   { key = "skurri", label = "Skurri", file = "Fonts\\SKURRI.ttf" },
 }
 
+-- Menu font strings disallow SetFont, so previews use font objects instead
+for _, h in ipairs(FONTS) do
+  h.fontObject = CreateFont("YourChronicleMenuFont_" .. h.key)
+  h.fontObject:CopyFontObject(GameFontHighlightSmall)
+  h.fontObject:SetFont(h.file, 13, "")
+end
+
 local font = "morpheus"
 local size = 17
 local titleSize = 18
@@ -170,7 +177,7 @@ local function Build(parent)
       end)
 
       radio:AddInitializer(function(button)
-        button.fontString:SetFont(h.file, 13, "")
+        button.fontString:SetFontObject(h.fontObject)
       end)
     end
   end)
