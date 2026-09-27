@@ -15,6 +15,17 @@ local bodyScroll
 local sizeLabel
 local fontDropdown
 local footerText
+local mode = "draft"
+local dateline
+local zone
+local newButton
+local seal
+local shown
+local dirty = false
+local saveTimer
+local AUTOSAVE_DELAY = 1
+
+local SEAL_LABELS = { draft = "PAGE_SEAL", read = "PAGE_EDIT", edit = "PAGE_SAVE_CHANGES" }
 
 local FONTS = {
   { key = "morpheus", label = "Morpheus", file = "Fonts\\MORPHEUS.ttf" },
@@ -71,6 +82,10 @@ local function EnsureDraft()
 end
 
 local function SaveDraft()
+  if mode ~= "draft" then
+    return
+  end
+
   local title = titleBox and titleBox:GetText() or ""
   local text = body and body:GetText() or ""
 
@@ -84,6 +99,58 @@ local function SaveDraft()
   draft.body = text
   draft.font = font
   draft.size = size
+end
+
+local function UpdateSealButton()
+  if not seal then
+    return
+  end
+
+  if mode == "edit" and not dirty then
+    seal:SetText(L["PAGE_SAVED"])
+    seal:Disable()
+  else
+    seal:SetText(L[SEAL_LABELS[mode]])
+    seal:Enable()
+  end
+end
+
+local function FlushEdit()
+  if saveTimer then
+    saveTimer:Cancel()
+    saveTimer = nil
+  end
+
+  if not dirty or not shown then
+    return
+  end
+
+  shown.title = titleBox:GetText()
+  shown.text = body:GetText()
+  shown.font = font
+  shown.size = size
+
+  dirty = false
+  UpdateSealButton()
+  ns.Volumes.Refresh()
+end
+
+local function MarkDirty()
+  dirty = true
+  UpdateSealButton()
+
+  if saveTimer then
+    saveTimer:Cancel()
+  end
+  saveTimer = C_Timer.NewTimer(AUTOSAVE_DELAY, FlushEdit)
+end
+
+local function OnUserEdit()
+  if mode == "draft" then
+    SaveDraft()
+  elseif mode == "edit" then
+    MarkDirty()
+  end
 end
 
 local function CountWords(text)
@@ -125,17 +192,14 @@ local function Seal()
     timestamp = time(),
     font = font,
     size = size,
+    zone = GetZoneText(),
   }
 
   ns.Print(L["PAGE_SEALED"]:format(title ~= "" and title or L["PAGE_UNTITLED"]))
 
   ns.db.draft = nil
-  titleBox:SetText("")
-  body:SetText("")
 
-  UpdateFooter()
-
-  ns.Volumes.SelectLast()
+  ns.Volumes.Select(#volume)
 
   return true
 end
@@ -159,7 +223,7 @@ local function ApplyFont()
     sizeLabel:SetText(size .. " px")
   end
 
-  SaveDraft()
+  OnUserEdit()
 end
 
 local function SetFont(key)
@@ -172,9 +236,94 @@ local function SetSize(delta)
   ApplyFont()
 end
 
+local function SetLocked(locked)
+  titleBox:EnableMouse(not locked)
+  body:EnableMouse(not locked)
+
+  if locked then
+    titleBox:ClearFocus()
+    body:ClearFocus()
+  end
+end
+
+local function SetMode(newMode)
+  mode = newMode
+  UpdateSealButton()
+  newButton:SetShown(newMode ~= "draft")
+  SetLocked(newMode == "read")
+end
+
+function ns.Page.ShowEntry(entry)
+  FlushEdit()
+
+  if not body then
+    return
+  end
+
+  SetMode("read")
+  shown = entry
+
+  titleBox:SetText(entry.title or "")
+  body:SetText(entry.text or "")
+  font = entry.font or ns.db.page.font
+  size = entry.size or ns.db.page.size
+
+  dateline:SetText(date("%d %B %Y", entry.timestamp or time()))
+
+  zone:SetShown(entry.zone ~= nil)
+  if entry.zone then
+    zone:SetText(L["PAGE_ZONE"]:format(entry.zone))
+  end
+
+  UpdateFooter()
+  ApplyFont()
+end
+
+function ns.Page.NewDraft()
+  FlushEdit()
+
+  if not body then
+    return
+  end
+
+  SetMode("draft")
+  shown = nil
+
+  local draft = ns.db.draft
+  titleBox:SetText(draft and draft.title or "")
+  body:SetText(draft and draft.body or "")
+
+  if draft then
+    font = draft.font or ns.db.page.font
+    size = draft.size or ns.db.page.size
+  else
+    UseDefaults()
+  end
+
+  dateline:SetText(date("%d %B %Y", draft and draft.timestamp or time()))
+  zone:SetText(L["PAGE_ZONE"]:format(GetZoneText() or ""))
+  zone:Show()
+
+  UpdateFooter()
+  ApplyFont()
+end
+
+local function BeginEdit()
+  SetMode("edit")
+  body:SetFocus()
+end
+
+local function SaveChanges()
+  FlushEdit()
+  local title = titleBox:GetText()
+  ns.Print(L["PAGE_UPDATED"]:format(title ~= "" and title or L["PAGE_UNTITLED"]))
+  SetMode("read")
+end
+
 local function Build(parent)
   pageFrame = CreateFrame("Frame", nil, parent)
   pageFrame:SetAllPoints()
+  pageFrame:SetScript("OnHide", FlushEdit)
 
   local toolbar = CreateFrame("Frame", nil, pageFrame)
   toolbar:SetHeight(26)
@@ -248,16 +397,16 @@ local function Build(parent)
   end)
   titleBox:SetScript("OnTextChanged", function(_, userInput)
     if userInput then
-      SaveDraft()
+      OnUserEdit()
     end
   end)
 
-  local dateline = parchment:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  dateline = parchment:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   dateline:SetPoint("TOP", parchment, "TOP", 0, -46)
   dateline:SetText(date("%d %B %Y"))
   dateline:SetTextColor(0.45, 0.35, 0.2)
 
-  local zone = parchment:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  zone = parchment:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   zone:SetPoint("TOP", parchment, "TOP", 0, -62)
   zone:SetText(L["PAGE_ZONE"]:format(GetZoneText() or ""))
   zone:SetTextColor(0.45, 0.35, 0.2)
@@ -280,7 +429,7 @@ local function Build(parent)
 
   body:SetScript("OnTextChanged", function(_, userInput)
     if userInput then
-      SaveDraft()
+      OnUserEdit()
     end
     UpdateFooter()
   end)
@@ -302,7 +451,9 @@ local function Build(parent)
   bodyScroll:EnableMouse(true)
 
   bodyScroll:SetScript("OnMouseDown", function()
-    body:SetFocus()
+    if mode ~= "read" then
+      body:SetFocus()
+    end
   end)
 
   local footer = CreateFrame("Frame", nil, pageFrame)
@@ -313,39 +464,35 @@ local function Build(parent)
   footerText = footer:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   footerText:SetPoint("LEFT", 8, 0)
 
-  local seal = CreateFrame("Button", nil, footer, "UIPanelButtonTemplate")
+  seal = CreateFrame("Button", nil, footer, "UIPanelButtonTemplate")
   seal:SetSize(110, 22)
   seal:SetPoint("RIGHT", -8, 0)
   seal:SetNormalFontObject("GameFontHighlightSmall")
   seal:SetText(L["PAGE_SEAL"])
   seal:SetScript("OnClick", function()
-    if Seal() then
-      UseDefaults()
-      ApplyFont()
+    if mode == "draft" then
+      Seal()
+    elseif mode == "read" then
+      BeginEdit()
+    else
+      SaveChanges()
     end
   end)
 
-  local draft = ns.db.draft
-  if draft then
-    titleBox:SetText(draft.title or "")
-    body:SetText(draft.body or "")
-    font = draft.font or ns.db.page.font
-    size = draft.size or ns.db.page.size
+  newButton = CreateFrame("Button", nil, footer, "UIPanelButtonTemplate")
+  newButton:SetSize(110, 22)
+  newButton:SetPoint("RIGHT", seal, "LEFT", -6, 0)
+  newButton:SetNormalFontObject("GameFontHighlightSmall")
+  newButton:SetText(L["PAGE_NEW"])
+  newButton:SetScript("OnClick", function()
+    ns.Volumes.Select(nil)
+  end)
 
-    if draft.timestamp then
-      dateline:SetText(date("%d %B %Y", draft.timestamp))
-    end
-  else
-    UseDefaults()
-  end
-
-  UpdateFooter()
+  ns.Page.NewDraft()
 
   bodyScroll:SetScript("OnSizeChanged", function(_, width)
     body:SetWidth(width)
   end)
-
-  ApplyFont()
 
   return pageFrame
 end

@@ -86,6 +86,7 @@ SlashCmdList["YOURCHRONICLE"] = function(input)
 
   elseif cmd == "new" then
     ns.Frame.Open("journal")
+    ns.Volumes.Select(nil)
     ns.Page.Focus()
 
   elseif cmd == "test" then

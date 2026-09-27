@@ -49,7 +49,7 @@ local function DeleteEntry(entry)
   table.remove(volume, index)
 
   if selected == index then
-    selected = nil
+    ns.Volumes.Select(nil)
   elseif selected and selected > index then
     selected = selected - 1
   end
@@ -122,8 +122,7 @@ local function CreateRow(parent)
       return
     end
 
-    selected = row.entryIndex
-    ns.Volumes.Refresh()
+    ns.Volumes.Select(row.entryIndex)
   end)
 
   return row
@@ -206,11 +205,17 @@ function ns.Volumes.Refresh()
   page.empty:SetShown(#volume == 0)
 end
 
-function ns.Volumes.SelectLast()
-  local volume = ns.GetVolume()
-  selected = #volume
-
+function ns.Volumes.Select(index)
+  selected = index
   ns.Volumes.Refresh()
+
+  local volume = ns.GetVolume()
+  local entry = index and volume and volume[index]
+  if entry then
+    ns.Page.ShowEntry(entry)
+  else
+    ns.Page.NewDraft()
+  end
 end
 
 local function Build(parent)
@@ -260,8 +265,7 @@ end
 
 ns.Settings.Watch(function(key)
   if key == "scope" then
-    selected = nil
-    ns.Volumes.Refresh()
+    ns.Volumes.Select(nil)
   end
 end)
 
