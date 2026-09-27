@@ -46,34 +46,57 @@ end)
 -- ---------------------------------------------------------------------------
 -- Slash commands
 -- ---------------------------------------------------------------------------
--- These global names are SLASH_ + the addon name in upper case + an index.
 SLASH_YOURCHRONICLE1 = "/yc"
-SLASH_YOURCHRONICLE2 = "/yourchronicle"
+
+local function PrintHelp()
+  local L = ns.L
+  ns.Print(L["HELP_HEADER"])
+  ns.Print(L["HELP_WINDOW"])
+  ns.Print(L["HELP_CONFIG"])
+  ns.Print(L["HELP_LOG"])
+  ns.Print(L["HELP_NEW"])
+end
+
+local function PrintLog()
+  local L = ns.L
+  local character = ns.GetCharacter()
+  local deeds = character and character.log[date("%Y-%m-%d")] or {}
+
+  if #deeds == 0 then
+    ns.Print(L["LOG_EMPTY"])
+    return
+  end
+
+  ns.Print(L["LOG_HEADER"]:format(#deeds))
+  for _, deed in ipairs(deeds) do
+    ns.Print(("  %s  %s"):format(date("%H:%M", deed.time), deed.text or deed.kind))
+  end
+end
 
 SlashCmdList["YOURCHRONICLE"] = function(input)
   local L = ns.L
-  -- rest holds everything after the subcommand, for commands that take arguments.
   local cmd, rest = strtrim(input):match("^(%S+)%s*(.*)")
   cmd = cmd and cmd:lower() or ""
 
   if cmd == "config" then
     ns.Settings.Open()
 
-  elseif cmd == "toggle" then
-    ns.db.enabled = not ns.db.enabled
-    ns.Print(ns.db.enabled and L["ENABLED"] or L["DISABLED"])
+  elseif cmd == "log" then
+    PrintLog()
+
+  elseif cmd == "new" then
+    ns.Frame.Open("journal")
+    ns.Page.Focus()
 
   elseif cmd == "test" then
     ns.Dev.Handle(rest or "")
 
   elseif cmd == "help" then
-    ns.Print(L["HELP_HEADER"])
-    ns.Print(L["HELP_WINDOW"])
-    ns.Print(L["HELP_CONFIG"])
-    ns.Print(L["HELP_TOGGLE"])
+    PrintHelp()
 
   elseif cmd ~= "" then
     ns.Print(L["UNKNOWN_COMMAND"]:format(cmd))
+    PrintHelp()
 
   else
     ns.Frame.Toggle()

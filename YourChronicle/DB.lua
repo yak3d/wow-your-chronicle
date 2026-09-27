@@ -2,18 +2,21 @@ local _, ns = ...
 
 ns.DB = {}
 
-local DB_VERSION = 1
+local DB_VERSION = 5
 
 local DEFAULT_DB = {
   version = DB_VERSION,
-  enabled = true,
 
-  exampleValue = 50,
+  minimap = true,
+  autoChapters = true,
+  memorial = false,
+
+  page = { font = "morpheus", size = 17 },
 
   scope = "character",
 
   tracking = {
-    quests = true, souls = true, relics = true, levels = true,
+    quests = true, npcs = true, items = true, levels = true,
     deaths = true, places = true, foes = true, standing = true,
     crafts = true, company = true,
   },
@@ -55,16 +58,49 @@ local function DeepCopyDefaults(src, dst)
   end
 end
 
+local function RenameCategory(old, new)
+  local tracking = YourChronicleDB.tracking
+  if tracking[old] ~= nil then
+    tracking[new] = tracking[old]
+    tracking[old] = nil
+  end
+
+  for _, character in pairs(YourChronicleDB.characters) do
+    for _, bucket in pairs(character.log or {}) do
+      for _, deed in ipairs(bucket) do
+        if deed.kind == old then
+          deed.kind = new
+        end
+      end
+    end
+  end
+end
+
 function ns.DB.Init()
   if not YourChronicleDB then
     YourChronicleDB = {}
   end
   DeepCopyDefaults(DEFAULT_DB, YourChronicleDB)
 
-  if (YourChronicleDB.version or 0) < DB_VERSION then
-    -- new migrations to new versions will go here
-    YourChronicleDB.version = DB_VERSION
+  local version = YourChronicleDB.version or 0
+
+  if version < 2 then
+    YourChronicleDB.exampleValue = nil
   end
+
+  if version < 3 then
+    YourChronicleDB.enabled = nil
+  end
+
+  if version < 4 then
+    RenameCategory("souls", "npcs")
+  end
+
+  if version < 5 then
+    RenameCategory("relics", "items")
+  end
+
+  YourChronicleDB.version = DB_VERSION
 
   ns.db = YourChronicleDB
 end

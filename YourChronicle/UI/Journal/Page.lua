@@ -22,7 +22,6 @@ local FONTS = {
   { key = "skurri", label = "Skurri", file = "Fonts\\SKURRI.ttf" },
 }
 
--- Menu font strings disallow SetFont, so previews use font objects instead
 for _, h in ipairs(FONTS) do
   h.fontObject = CreateFont("YourChronicleMenuFont_" .. h.key)
   h.fontObject:CopyFontObject(GameFontHighlightSmall)
@@ -43,6 +42,21 @@ local function FontFile()
   end
 
   return FONTS[1].file
+end
+
+function ns.Page.GetFonts()
+  return FONTS
+end
+
+function ns.Page.Focus()
+  if body then
+    body:SetFocus()
+  end
+end
+
+local function UseDefaults()
+  font = ns.db.page.font
+  size = ns.db.page.size
 end
 
 local function EnsureDraft()
@@ -122,6 +136,8 @@ local function Seal()
   UpdateFooter()
 
   ns.Volumes.SelectLast()
+
+  return true
 end
 
 local function ApplyFont()
@@ -302,18 +318,25 @@ local function Build(parent)
   seal:SetPoint("RIGHT", -8, 0)
   seal:SetNormalFontObject("GameFontHighlightSmall")
   seal:SetText(L["PAGE_SEAL"])
-  seal:SetScript("OnClick", Seal)
+  seal:SetScript("OnClick", function()
+    if Seal() then
+      UseDefaults()
+      ApplyFont()
+    end
+  end)
 
   local draft = ns.db.draft
   if draft then
     titleBox:SetText(draft.title or "")
     body:SetText(draft.body or "")
-    font = draft.font or "morpheus"
-    size = draft.size or 17
+    font = draft.font or ns.db.page.font
+    size = draft.size or ns.db.page.size
 
     if draft.timestamp then
       dateline:SetText(date("%d %B %Y", draft.timestamp))
     end
+  else
+    UseDefaults()
   end
 
   UpdateFooter()

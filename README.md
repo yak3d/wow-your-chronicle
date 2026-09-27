@@ -13,9 +13,11 @@
 
 | Command                   | Description                 |
 | ------------------------- | --------------------------- |
-| `/yc`        | Show available commands     |
-| `/yc config` | Open the settings panel     |
-| `/yc toggle` | Enable or disable the addon |
+| `/yc`                     | Open or close the journal   |
+| `/yc new`                 | Open the journal and start writing |
+| `/yc log`                 | List the deeds recorded today |
+| `/yc config`              | Open the settings panel     |
+| `/yc help`                | Show available commands     |
 
 ## Settings
 

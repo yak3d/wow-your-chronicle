@@ -258,5 +258,12 @@ local function Build(parent)
   return page
 end
 
+ns.Settings.Watch(function(key)
+  if key == "scope" then
+    selected = nil
+    ns.Volumes.Refresh()
+  end
+end)
+
 ns.Frame.RegisterTab("journal", L["TAB_JOURNAL"], "Interface\\Icons\\INV_Misc_Book_09", Build)
 

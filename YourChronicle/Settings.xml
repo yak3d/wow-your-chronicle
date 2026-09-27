@@ -1,0 +1,11 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+  <Frame name="YourChronicleTrackingGridTemplate"
+         inherits="SettingsListElementTemplate"
+         mixin="YourChronicleTrackingGridMixin"
+         virtual="true">
+    <Size x="280" y="164"/>
+    <Scripts>
+      <OnLoad method="OnLoad"/>
+    </Scripts>
+  </Frame>
+</Ui>

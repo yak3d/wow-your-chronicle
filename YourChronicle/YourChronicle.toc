@@ -11,10 +11,11 @@
 
 Locale.lua
 DB.lua
+Settings.lua
+Settings.xml
 Dev.lua
 Core.lua
 Tracker.lua
 UI/MainFrame/MainFrame.xml
 UI/Journal/Volumes.lua
 UI/Journal/Page.lua
-Settings.lua

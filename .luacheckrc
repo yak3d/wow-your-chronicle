@@ -22,8 +22,8 @@ exclude_files = {
 -- The SLASH_ names are SLASH_ + the upper-cased addon name + an index.
 globals = {
     "YourChronicleDB",
+    "YourChronicleTrackingGridMixin",
     "SLASH_YOURCHRONICLE1",
-    "SLASH_YOURCHRONICLE2",
     "SlashCmdList",
     "YourChronicleFrame",
     "UISpecialFrames",
@@ -40,6 +40,8 @@ read_globals = {
     "CreateFrame", "UIParent", "GameTooltip", "DEFAULT_CHAT_FRAME",
     "StaticPopup_Show", "MenuUtil", "YES", "NO", "Mixin", "CreateFromMixins",
     "Settings", "MinimalSliderWithSteppersMixin", "Enum", "SOUNDKIT",
+    "CreateSettingsListSectionHeaderInitializer", "SettingsControlMixin",
+    
 
     -- API functions and namespaces
     "GetLocale", "GetTime", "GetBuildInfo", "GetRealmName", "InCombatLockdown", "IsInInstance",

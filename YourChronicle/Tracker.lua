@@ -29,7 +29,7 @@ RegisterCategory({
 })
 
 RegisterCategory({
-  key = "souls",
+  key = "npcs",
   events = { "GOSSIP_SHOW", "QUEST_GREETING", "QUEST_DETAIL", "QUEST_PROGRESS" },
   handler = function(_, forcedName)
     local name = type(forcedName) == "string" and forcedName or UnitName("npc")
@@ -45,7 +45,7 @@ RegisterCategory({
     end
 
     local firstMeeting = not character.met[guid]
-    ns.Tracker.Log("souls", {
+    ns.Tracker.Log("npcs", {
       name = name,
       zone = GetZoneText(),
       firstMeeting = firstMeeting,
@@ -107,7 +107,7 @@ RegisterCategory({
 })
 
 RegisterCategory({
-  key = "relics",
+  key = "items",
   events = { "CHAT_MSG_LOOT" },
   handler = function(_, message, looter)
     local link
@@ -115,7 +115,7 @@ RegisterCategory({
       if type(message) == "number" then
         local name, itemLink, quality = C_Item.GetItemInfo(message)
         if not itemLink then
-          ns.Print("relics: no cached data for item " .. message .. " — try again or use a pasted link")
+          ns.Print("items: no cached data for item " .. message .. " — try again or use a pasted link")
           return
         end
         link = itemLink
@@ -138,7 +138,7 @@ RegisterCategory({
       return
     end
 
-    ns.Tracker.Log("relics", {
+    ns.Tracker.Log("items", {
       name = name,
       link = link,
       quality = quality,

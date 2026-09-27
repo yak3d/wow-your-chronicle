@@ -89,6 +89,12 @@ local zoneWatcher = CreateFrame("Frame")
 zoneWatcher:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 zoneWatcher:SetScript("OnEvent", UpdateHeader)
 
+ns.Settings.Watch(function(key)
+  if key == "scope" then
+    UpdateHeader()
+  end
+end)
+
 -- -----------
 -- Tabs
 -- -----------
@@ -264,5 +270,10 @@ function ns.Frame.Toggle()
   else
     frame:Show()
   end
+end
+
+function ns.Frame.Open(id)
+  frame:Show()
+  SelectTab(id)
 end
 
