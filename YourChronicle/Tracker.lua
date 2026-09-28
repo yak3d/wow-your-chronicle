@@ -2,6 +2,8 @@ local _, ns = ...
 
 ns.Tracker = {}
 
+local L = ns.L
+
 -- -----------------------------
 -- Category Registry
 -- -----------------------------
@@ -22,8 +24,6 @@ RegisterCategory({
       questID = questID,
       title = title,
       zone = GetZoneText(),
-      -- NEW: the deed's sentence, built from its own fields.
-      text = title and ("accepted: " .. title) or ("accepted quest #" .. tostring(questID)),
     })
   end,
 })
@@ -49,7 +49,6 @@ RegisterCategory({
       name = name,
       zone = GetZoneText(),
       firstMeeting = firstMeeting,
-      text = firstMeeting and ("first meeting: " .. name) or ("spoke with: " .. name)
     })
 
     character.met[guid] = true
@@ -65,7 +64,6 @@ RegisterCategory({
       lastLevelDeed = ns.Tracker.Log("levels", {
         level = newLevel,
         zone = GetZoneText(),
-        text = "reached level " .. tostring(newLevel),
       })
       RequestTimePlayed()
     else
@@ -99,7 +97,6 @@ RegisterCategory({
     ns.Tracker.Log("places", {
       zone = zone,
       firstVisit = firstVisit,
-      text = firstVisit and ("first visit: " .. zone) or ("returned to: " .. zone),
     })
 
     character.places[zone] = true
@@ -143,7 +140,6 @@ RegisterCategory({
       link = link,
       quality = quality,
       zone = GetZoneText(),
-      text = "looted: " .. link,
     })
   end,
 })
@@ -176,7 +172,6 @@ RegisterCategory({
       y = pos and pos.y or nil,
       killer = nil,
       party = members,
-      text = "died in " .. GetZoneText(),
     })
   end,
 })
@@ -197,8 +192,6 @@ RegisterCategory({
         name = name,
         difficultyID = difficultyID,
         wipes = wipes,
-        text = "defeated: " .. name
-          .. (wipes > 0 and (" (after " .. wipes .. (wipes == 1 and " wipe)" or "wipes)")) or ""),
       })
     else
       character.wipes[encounterID] = (character.wipes[encounterID] or 0) + 1
@@ -230,7 +223,6 @@ RegisterCategory({
           ns.Tracker.Log("standing", {
             faction = data.name,
             standingID = data.reaction,
-            text = data.name .. " standing increased",
           })
         end
       end
@@ -251,7 +243,6 @@ RegisterCategory({
       recipeID = recipeID,
       name = spellInfo.name,
       zone = GetZoneText(),
-      text = "learned: " .. spellInfo.name,
     })
   end,
 })
@@ -279,7 +270,6 @@ RegisterCategory({
 
     ns.Tracker.Log("company", {
       party = members,
-      text = "joined " .. (#members + 1) .. " travelers: " .. table.concat(members, ", "),
     })
   end,
 })
@@ -304,7 +294,69 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
 end)
 
 local sourceOverride = nil
+local watchers = {}
 
+function ns.Tracker.Watch(fn)
+  watchers[#watchers + 1] = fn
+end
+
+local function Notify()
+  for _, fn in ipairs(watchers) do
+    fn()
+  end
+end
+
+local SENTENCES = {
+  quests = function(deed)
+    if deed.title then
+      return L["DEED_QUEST"]:format(deed.title)
+    end
+    return deed.questID and L["DEED_QUEST_ID"]:format(deed.questID)
+  end,
+  npcs = function(deed)
+    return deed.name and L[deed.firstMeeting and "DEED_NPC_FIRST" or "DEED_NPC"]:format(deed.name)
+  end,
+  levels = function(deed)
+    return deed.level and L["DEED_LEVEL"]:format(deed.level)
+  end,
+  places = function(deed)
+    return deed.zone and L[deed.firstVisit and "DEED_PLACE_FIRST" or "DEED_PLACE"]:format(deed.zone)
+  end,
+  items = function(deed)
+    local item = deed.link or deed.name
+    return item and L["DEED_ITEM"]:format(item)
+  end,
+  deaths = function(deed)
+    return deed.zone and L["DEED_DEATH"]:format(deed.zone)
+  end,
+  foes = function(deed)
+    if not deed.name then
+      return nil
+    end
+    local wipes = deed.wipes or 0
+    if wipes == 1 then
+      return L["DEED_FOE_WIPE"]:format(deed.name)
+    elseif wipes > 1 then
+      return L["DEED_FOE_WIPES"]:format(deed.name, wipes)
+    end
+    return L["DEED_FOE"]:format(deed.name)
+  end,
+  standing = function(deed)
+    return deed.faction and L["DEED_STANDING"]:format(deed.faction)
+  end,
+  crafts = function(deed)
+    return deed.name and L["DEED_CRAFT"]:format(deed.name)
+  end,
+  company = function(deed)
+    local party = deed.party
+    return party and #party > 0 and L["DEED_COMPANY"]:format(#party + 1, table.concat(party, ", "))
+  end,
+}
+
+function ns.Tracker.Describe(deed)
+  local sentence = SENTENCES[deed.kind]
+  return sentence and sentence(deed) or deed.text or deed.kind
+end
 
 function ns.Tracker.Log(kind, deed)
   local character = ns.GetCharacter()
@@ -312,7 +364,12 @@ function ns.Tracker.Log(kind, deed)
     return
   end
 
-  local day = date("%Y-%m-%d")
+  deed.kind = kind
+  deed.time = deed.time or time()
+  deed.source = deed.source or sourceOverride or "game"
+  deed.text = ns.Tracker.Describe(deed)
+
+  local day = date("%Y-%m-%d", deed.time)
   local bucket = character.log[day]
 
   if not bucket then
@@ -320,10 +377,9 @@ function ns.Tracker.Log(kind, deed)
     character.log[day] = bucket
   end
 
-  deed.kind = kind
-  deed.time = time()
-  deed.source = sourceOverride or "game"
   bucket[#bucket + 1] = deed
+
+  Notify()
 
   return deed
 end
@@ -343,4 +399,66 @@ function ns.Tracker.Simulate(key, ...)
   end
 
   sourceOverride = previous
+end
+
+function ns.Tracker.GetDays()
+  local days = {}
+  local character = ns.GetCharacter()
+  if not character then
+    return days
+  end
+
+  for day, bucket in pairs(character.log) do
+    if #bucket > 0 then
+      days[#days + 1] = day
+    end
+  end
+
+  table.sort(days)
+
+  return days
+end
+
+function ns.Tracker.GetDeeds(day)
+  local deeds = {}
+  local character = ns.GetCharacter()
+  local bucket = character and character.log[day]
+  if not bucket then
+    return deeds
+  end
+
+  for _, deed in ipairs(bucket) do
+    if ns.db.tracking[deed.kind] then
+      if ns.db.tracking[deed.kind] then
+        deeds[#deeds + 1] = deed
+      end
+    end
+  end
+
+  return deeds
+end
+
+function ns.Tracker.Forget(source)
+  local character = ns.GetCharacter()
+  if not character then
+    return 0
+  end
+
+  local removed = 0
+  for day, bucket in pairs(character.log) do
+    for i = #bucket, 1, -1 do
+      if bucket[i].source == source then
+        tremove(bucket, i)
+        removed = removed + 1
+      end
+    end
+
+    if #bucket == 0 then
+      character.log[day] = nil
+    end
+  end
+
+  Notify()
+
+  return removed
 end

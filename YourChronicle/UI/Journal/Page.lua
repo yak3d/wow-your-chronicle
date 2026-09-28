@@ -24,6 +24,9 @@ local shown
 local dirty = false
 local saveTimer
 local AUTOSAVE_DELAY = 1
+local cursorX, cursorY, cursorH = 0, 0, 0
+local readView
+local readText
 
 local SEAL_LABELS = { draft = "PAGE_SEAL", read = "PAGE_EDIT", edit = "PAGE_SAVE_CHANGES" }
 
@@ -204,6 +207,21 @@ local function Seal()
   return true
 end
 
+local function UpdateReadView()
+  if not readView or mode ~= "read" then
+    return
+  end
+
+  local width = bodyScroll:GetWidth()
+  readView:SetWidth(width)
+  readText:SetWidth(width)
+
+  readText:SetFont(FontFile(), size, "")
+  readText:SetText(body:GetText())
+
+  readView:SetHeight(readText:GetStringHeight() + 8)
+end
+
 local function ApplyFont()
   local file = FontFile()
 
@@ -223,6 +241,7 @@ local function ApplyFont()
     sizeLabel:SetText(size .. " px")
   end
 
+  UpdateReadView()
   OnUserEdit()
 end
 
@@ -251,6 +270,12 @@ local function SetMode(newMode)
   UpdateSealButton()
   newButton:SetShown(newMode ~= "draft")
   SetLocked(newMode == "read")
+
+  local reading = newMode == "read"
+  body:SetShown(not reading)
+  readView:SetShown(reading)
+  bodyScroll:SetScrollChild(reading and readView or body)
+  UpdateReadView()
 end
 
 function ns.Page.ShowEntry(entry)
@@ -320,10 +345,40 @@ local function SaveChanges()
   SetMode("read")
 end
 
+function ns.Page.Insert(text, replace)
+  if not body then
+    return
+  end
+
+  if mode == "read" then
+    BeginEdit()
+  end
+
+  body:SetFocus()
+
+  if replace then
+    local full = body:GetText()
+    local cursor = body:GetCursorPosition()
+    local before = full:sub(cursor - #replace + 1, cursor)
+
+    if before == replace then
+      body:SetText(full:sub(1, cursor - #replace) .. full:sub(cursor + 1))
+      body:SetCursorPosition(cursor - #replace)
+    end
+  end
+
+  body:Insert(text)
+
+  OnUserEdit()
+end
+
 local function Build(parent)
   pageFrame = CreateFrame("Frame", nil, parent)
   pageFrame:SetAllPoints()
-  pageFrame:SetScript("OnHide", FlushEdit)
+  pageFrame:SetScript("OnHide", function()
+    FlushEdit()
+    ns.Cite.ClosePicker()
+  end)
 
   local toolbar = CreateFrame("Frame", nil, pageFrame)
   toolbar:SetHeight(26)
@@ -423,8 +478,37 @@ local function Build(parent)
   body:SetTextColor(0.13, 0.09, 0.05)
   bodyScroll:SetScrollChild(body)
 
+  readView = CreateFrame("Frame", nil, bodyScroll)
+  readView:SetSize(1, 1)
+  readView:EnableMouse(true)
+  readView:SetHyperlinksEnabled(true)
+  readView:Hide()
+
+  readText = readView:CreateFontString(nil, "OVERLAY")
+  readText:SetPoint("TOPLEFT")
+  readText:SetJustifyH("LEFT")
+  readText:SetJustifyV("TOP")
+  readText:SetTextColor(0.13, 0.09, 0.05)
+
+  readView:SetScript("OnHyperlinkEnter", function(self, link, text)
+    ns.Cite.ShowTooltip(self, link, text)
+  end)
+  readView:SetScript("OnHyperlinkLeave", function()
+    GameTooltip:Hide()
+  end)
+
   body:SetScript("OnEscapePressed", function()
-    body:ClearFocus()
+    if not ns.Cite.ClosePicker() then
+      body:ClearFocus()
+    end
+  end)
+
+  body:SetScript("OnChar", function(_, char)
+    if char == "@" then
+      ns.Cite.OpenPicker(body, cursorX, cursorY - cursorH)
+    else
+      ns.Cite.ClosePicker()
+    end
   end)
 
   body:SetScript("OnTextChanged", function(_, userInput)
@@ -434,7 +518,9 @@ local function Build(parent)
     UpdateFooter()
   end)
 
-  body:SetScript("OnCursorChanged", function(_, _, y, _, h)
+  body:SetScript("OnCursorChanged", function(_, x, y, _, h)
+    cursorX, cursorY, cursorH = x, y, h
+
     local viewHeight = bodyScroll:GetHeight()
     local offset
 
@@ -492,6 +578,7 @@ local function Build(parent)
 
   bodyScroll:SetScript("OnSizeChanged", function(_, width)
     body:SetWidth(width)
+    UpdateReadView()
   end)
 
   return pageFrame

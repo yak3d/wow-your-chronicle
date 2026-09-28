@@ -216,6 +216,9 @@ function ns.Settings.Init()
     function() return PackTracking(db.tracking) end,
     function(mask) UnpackTracking(mask, db.tracking) end
   )
+  trackingSetting:SetValueChangedCallback(function()
+    Notify("tracking")
+  end)
 
   local trackingInit = Settings.CreateControlInitializer(
     "YourChronicleTrackingGridTemplate", trackingSetting, nil, L["TRACK_TT"]

@@ -73,7 +73,7 @@ ns.Dev.RegisterVerb("dump", function ()
 
     for _, deed in ipairs(bucket) do
       ns.Print((" %s [%s] %s"):format(
-        date("%H:%M", deed.time), deed.source, deed.text or deed.kind))
+        date("%H:%M", deed.time), deed.source, ns.Tracker.Describe(deed)))
     end
 
   else
@@ -147,4 +147,49 @@ ns.Dev.RegisterVerb("unseed", function()
 
   ns.Print(("removed %d test entries, kept %d"):format(removed, #kept))
   ns.Volumes.Refresh()
+end)
+
+local SAMPLE_EPIC = "|cffa335ee|Hitem:12640::::::::|h[Lionheart Helm]|h|r"
+
+ns.Dev.RegisterVerb("deeds", function()
+  local now = time()
+  local yesterday = now - 24 * 60 * 60
+
+  local samples = {
+    { kind = "npcs", time = yesterday, name = "Marshal McBride", firstMeeting = true },
+    { kind = "quests", time = yesterday + 60, questID = 7, title = "Kobold Camp Cleanup" },
+    { kind = "places", time = now - 120, zone = "Westfall", firstVisit = true },
+    { kind = "quests", time = now - 60, questID = 33, title = "Wolves Across the Border" },
+    { kind = "items", time = now, name = "Lionheart Helm", quality = 4, link = SAMPLE_EPIC },
+  }
+
+  for _, deed in ipairs(samples) do
+    deed.source = "test"
+    ns.Tracker.Log(deed.kind, deed)
+  end
+
+  ns.Print(("planted %d test deeds across 2 days"):format(#samples))
+end)
+
+ns.Dev.RegisterVerb("undeeds", function()
+  ns.Print(("removed %d test deeds"):format(ns.Tracker.Forget("test")))
+end)
+
+ns.Dev.RegisterVerb("raw", function(rest)
+  local index = tonumber(rest:match("^%s*(%d+)"))
+  local text
+
+  if index then
+    local volume = ns.GetVolume()
+    local entry = volume and volume[index]
+    if not entry then
+      ns.Print(("raw: no entry #%d"):format(index))
+      return
+    end
+    text = entry.text
+  else
+    text = ns.db.draft and ns.db.draft.body
+  end
+
+  ns.Print("raw: " .. (text or "(empty)"):gsub("|", "||"))
 end)

@@ -109,6 +109,44 @@ L["TRACK_CRAFTS_TT"] = "New recipes and patterns you learn."
 L["TRACK_COMPANY"] = "Groups joined"
 L["TRACK_COMPANY_TT"] = "Each party or raid you join."
 
+-- Deed sentences, built from each deed's fields when shown
+L["DEED_QUEST"] = "Accepted %s"
+L["DEED_QUEST_ID"] = "Accepted quest #%d"
+L["DEED_NPC_FIRST"] = "First meeting with %s"
+L["DEED_NPC"] = "Spoke with %s"
+L["DEED_LEVEL"] = "Reached level %d"
+L["DEED_PLACE_FIRST"] = "First visit to %s"
+L["DEED_PLACE"] = "Returned to %s"
+L["DEED_ITEM"] = "Looted %s"
+L["DEED_DEATH"] = "Died in %s"
+L["DEED_FOE"] = "Defeated %s"
+L["DEED_FOE_WIPE"] = "Defeated %s (after 1 wipe)"
+L["DEED_FOE_WIPES"] = "Defeated %s (after %d wipes)"
+L["DEED_STANDING"] = "Standing with %s rose"
+L["DEED_CRAFT"] = "Learned %s"
+L["DEED_COMPANY"] = "Joined a party of %d: %s"
+
+L["FEATS_TODAY"] = "Today"
+L["FEATS_NO_DAYS"] = "No deeds recorded yet"
+L["FEATS_EMPTY"] = "Nothing recorded on this day."
+L["FEATS_CITE"] = "Cite"
+
+L["CITE_QUEST"] = "Quest #%d"
+L["CITE_LEVEL"] = "Level %d"
+L["CITE_DEATH"] = "Fell in %s"
+
+-- Citation tooltip subtitles: describe a single past deed
+L["CITE_KIND_QUESTS"] = "Quest accepted"
+L["CITE_KIND_NPCS"] = "Person met"
+L["CITE_KIND_LEVELS"] = "Level reached"
+L["CITE_KIND_PLACES"] = "Place visited"
+L["CITE_KIND_ITEMS"] = "Loot found"
+L["CITE_KIND_DEATHS"] = "Slain"
+L["CITE_KIND_FOES"] = "Boss fought"
+L["CITE_KIND_STANDING"] = "Reputation gained"
+L["CITE_KIND_CRAFTS"] = "Recipe learned"
+L["CITE_KIND_COMPANY"] = "Group joined"
+
 -- ---------------------------------------------------------------------------
 -- Other locales
 -- ---------------------------------------------------------------------------

@@ -19,3 +19,6 @@ Tracker.lua
 UI/MainFrame/MainFrame.xml
 UI/Journal/Volumes.lua
 UI/Journal/Page.lua
+UI/Journal/Cite.lua
+UI/Feats/Feats.lua
+

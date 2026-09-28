@@ -69,7 +69,7 @@ local function PrintLog()
 
   ns.Print(L["LOG_HEADER"]:format(#deeds))
   for _, deed in ipairs(deeds) do
-    ns.Print(("  %s  %s"):format(date("%H:%M", deed.time), deed.text or deed.kind))
+    ns.Print(("  %s  %s"):format(date("%H:%M", deed.time), ns.Tracker.Describe(deed)))
   end
 end
 
